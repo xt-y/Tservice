@@ -129,3 +129,4 @@ curl -X POST https://dnsapi.cn/Record.Modify -d 'login_token=LOGIN_TOKEN&format=
 
 ## 参考
 * DNSPOD接口文档：https://www.dnspod.cn/docs/index.html
+* osnosn的博客：https://www.cnblogs.com/osnosn/p/11813096.html
