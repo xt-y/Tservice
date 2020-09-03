@@ -126,3 +126,6 @@ curl -X POST https://dnsapi.cn/Record.Modify -d 'login_token=LOGIN_TOKEN&format=
 | A记录       | A            | 直接解析到空间ipv4IP地址           | IPv4地址格式                                                 |
 | CNAME记录   | CNAME        | 解析到别名 | NameType形式，且不可为IP                                     |
 | AAAA记录    | AAAA         | 直接解析到空间ipv6IP地址           | IPv6地址格式                                                 |
+
+## 参考
+* DNSPOD接口文档：https://www.dnspod.cn/docs/index.html
