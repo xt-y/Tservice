@@ -1,10 +1,15 @@
 # 动态dns解析
 
 ## 实现功能
-使用脚本更新DNSPOD域名A记录及AAAA记录
+基于DNSPOD免费DNS服务，使用脚本更新A记录及AAAA记录
 
-## DNSPOD秘钥
+## 前置步骤
+1. 注册DNSPOD账号，并实名认证
+2. 在域名服务商处，将域名DNS改为f1g1ns1.dnspod.net,f1g1ns2.dnspod.net
+3. 将域名添加到DNSPOD中进行管理并添加A记录及AAAA记录。
+4. 添加DNSPOD秘钥
 ![](http://qfbeps0qh.hb-bkt.clouddn.com/go/20200904015231.png)
+5. 获取domain_id及record_id
 
 ## API格式
 ### 获取域名列表
@@ -119,7 +124,5 @@ curl -X POST https://dnsapi.cn/Record.Modify -d 'login_token=LOGIN_TOKEN&format=
 | 类型名称     | 类型取值       | 类型定义                                                     | 类型描述                                                     |
 | :--------  | :----------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
 | A记录       | A            | 直接解析到空间ipv4IP地址           | IPv4地址格式                                                 |
-| MX记录      | MX           | 电子邮件系统发邮件时根据收信人的地址后缀来定位邮件服务器              | NameType形式，且不可为IP地址。1-10，优先级依次递减。         |
-| TXT记录     | TXT          | 一般指为某个主机名或域名设置的说明 | 字符串；长度小于512,合法字符：大小写字母，数字,空格，及以下字符：-~=:;/.@+^!* |
 | CNAME记录   | CNAME        | 解析到别名 | NameType形式，且不可为IP                                     |
 | AAAA记录    | AAAA         | 直接解析到空间ipv6IP地址           | IPv6地址格式                                                 |
