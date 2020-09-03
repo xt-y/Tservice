@@ -11,6 +11,12 @@
 ![](http://qfbeps0qh.hb-bkt.clouddn.com/go/20200904015231.png)
 5. 获取domain_id及record_id
 
+## crontab
+```
+touch /var/log/ddns.log
+crontab -e
+*/30 * * * * bash ddns.sh 2>&1 >>/var/log/ddns.log
+```
 ## API格式
 ### 获取域名列表
 主要作用是获取domain_id
