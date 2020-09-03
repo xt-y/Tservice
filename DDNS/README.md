@@ -1,63 +1,120 @@
 # 动态dns解析
 
 ## 实现功能
-通过简单的配置，实现动态dns解析。支持多种
+使用脚本更新DNSPOD域名A记录及AAAA记录
 
-## 设计思路
-1. 获取外网ip
-2. 判断外网ip是否与之前一致
-3. 外网ip不一致时，新增或者更新域名解析记录
-4. 兼容阿里云、腾讯云域名
+## DNSPOD秘钥
+![](http://qfbeps0qh.hb-bkt.clouddn.com/go/20200904015231.png)
 
 ## API格式
-* 阿里云：
-```
-http(s)://alidns.aliyuncs.com/?
-&Action=UpdateDomainRecord
-&RecordId=9999985
-&RR=www
-&Type=A
-&Value=202.106.0.20
-&<公共请求参数>
+### 获取域名列表
+主要作用是获取domain_id
+```shell
+curl -X POST https://dnsapi.cn/Domain.List -d 'login_token=LOGIN_TOKEN&format=json'
 ```
 ```json
 {
-	"RecordId":"9999985",
-	"RequestId":"536E9CAD-DB30-4647-AC87-AA5CC38C5382"
+    "status": {
+        "code": "1",
+        "message": "Action completed successful",
+        "created_at": "2015-01-18 16:21:28"
+    },
+    "info": {
+        ...
+    },
+    "domains": [
+        {
+            "id": 2238269,
+            "status": "enable",
+            "grade": "D_Free",
+            "group_id": "1",
+            "searchengine_push": "yes",
+            "is_mark": "no",
+            "ttl": "300",
+            "created_on": "2015-01-19 08:20:03",
+            "updated_on": "2015-01-19 18:54:35",
+            "punycode": "xn--vnqp08b.cn",
+            "ext_status": "dnserror",
+            "name": "我们.cn",
+            ...
+        }
+    ]
 }
 ```
 
-* 腾讯云：
-```
-https://cns.api.qcloud.com/v2/index.php?
-&<公共请求参数>
-&Action=RecordModify
-&domain=xxx.com
-&recordId=281628246
-&subDomain=www
-&recordType=A
-&recordLine=默认
-&value=202.106.0.20
+### 获取记录列表
+主要作用是获取record_id
+```shell
+curl -X POST https://dnsapi.cn/Record.List -d 'login_token=LOGIN_TOKEN&format=json&domain_id=12600793&sub_domain=www&record_type=A&offset=0&length=3'
 ```
 ```json
 {
-    "code": 0,
-    "message": "",
-    "codeDesc": "Success",
-    "data": {
-        "record": {
-            "id": 282529938,
-            "name": "yizeronew1487857638",
-            "value": "112.112.21.21",
-            "status": "enable",
-            "weight": null
-        }
+    "status": {
+        "code": "1",
+        "message": "Action completed successful",
+        "created_at": "2018-06-11 10:41:18"
+    },
+    "domain": {
+        "id": "12600793",
+        "name": "example.com",
+        "punycode": "example.com",
+        "grade": "DP_Free",
+        "owner": "mailbox@example.com",
+        "ext_status": "dnserror",
+        "ttl": 600,
+        "dnspod_ns": [
+            "ns3.dnsv5.com",
+            "ns4.dnsv5.com"
+        ]
+    },
+    "info": {
+        "sub_domains": "7",
+        "record_total": "4",
+        "records_num": "3"
+    },
+    "records": [
+        {
+            "id": "13608148",
+            "name": "www",
+            "line": "电信",
+            "line_id": "10=0",
+            "type": "A",
+            "ttl": "600",
+            "value": "1.10.0.3",
+            "weight": null,
+            "mx": "0",
+            "enabled": "1",
+            "status": "enabled",
+            "monitor_status": "",
+            "remark": "",
+            "updated_on": "2018-06-11 10:12:51",
+            "use_aqb": "no"
+        },
+        ...
+    ]
+}
+```
+
+### 更新记录
+```shell
+curl -X POST https://dnsapi.cn/Record.Modify -d 'login_token=LOGIN_TOKEN&format=json&domain_id=2317346&record_id=16894439&sub_domain=www&value=3.2.2.2&record_type=A&record_line_id=10%3D0'
+```
+```json
+{
+    "status": {
+        "code":"1",
+        "message":"Action completed successful",
+        "created_at":"2015-01-18 16:53:23"
+    },
+    "record": {
+        "id":16894439,
+        "name":"@",
+        "value":"3.2.2.2",
+        "status":"enable"
     }
 }
 ```
-
 ## 解析记录类型
-
 
 | 类型名称     | 类型取值       | 类型定义                                                     | 类型描述                                                     |
 | :--------  | :----------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
@@ -66,10 +123,3 @@ https://cns.api.qcloud.com/v2/index.php?
 | TXT记录     | TXT          | 一般指为某个主机名或域名设置的说明 | 字符串；长度小于512,合法字符：大小写字母，数字,空格，及以下字符：-~=:;/.@+^!* |
 | CNAME记录   | CNAME        | 解析到别名 | NameType形式，且不可为IP                                     |
 | AAAA记录    | AAAA         | 直接解析到空间ipv6IP地址           | IPv6地址格式                                                 |
-
-##参考
-* https://blog.csdn.net/windy1001/article/details/90243477
-* https://api.aliyun.com/?spm=a2c4g.11186623.2.20.741a644edXP7L7#/?product=Alidns&api=DescribeSubDomainRecords&params=%7B%7D&tab=DEMO&lang=PYTHON
-* https://help.aliyun.com/document_detail/29776.html?spm=a2c4g.11186623.6.637.741a644edXP7L7
-* https://blog.csdn.net/fenghuizhidao/article/details/104970229
-* https://cloud.tencent.com/document/product/302/8511
