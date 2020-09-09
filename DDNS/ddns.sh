@@ -35,7 +35,7 @@ else
 fi
 
 # 更新ipv6
-ipv6=$(ip addr show|grep -v deprecated|grep -A1 'inet6 [^f:]'|sed -nr ':a;N;s#^ +inet6 ([a-f0-9:]+)/.+? scope global .*? valid_lft ([0-9]+sec) .*#\2 \1#p;ta'|sort -nr|head -n1|cut -d' ' -f2)
+ipv6=$(ip -6 address show | grep inet6|grep /64| awk '{print $2}'|cut -d'/' -f1|sort -nr|head -n1)
 echo "ipv6 is:" $ipv6
 ipv6_params='login_token='$token'&format=json&domain_id='$domain_id'&record_id='$ipv6_record_id'&sub_domain=pi&value='$ipv6'&record_type=AAAA&rrecord_line=默认'
 r6=$(curl -X POST https://dnsapi.cn/Record.Modify -d $ipv6_params|jq '.status')
